@@ -1,4 +1,4 @@
-# s3_audit.py
+# S3 Audit
 
 A Python tool that audits all S3 buckets in your AWS account for security compliance.
 
