@@ -111,3 +111,7 @@ This tool supports:
 - Check bucket logging
 - Filter buckets by tag
 - Email alerts for non-compliant buckets
+
+## Framework Reference
+
+Control family mappings and AWS implementation details are documented in [nist-800-53-rev-5-to-aws-mapping](https://github.com/0xBahalaNa/nist-800-53-rev-5-to-aws-mapping).
