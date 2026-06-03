@@ -107,6 +107,10 @@ This script supports the FedRAMP 20x compliance-as-code direction by producing d
 
 CJIS v6.0 became the audit standard on April 1, 2026 and aligns with NIST 800-53 Rev 5 as of December 2024. The most material delta this script touches is **SC-28**: CJIS v6.0 requires encryption at rest using **agency-managed Customer Master Keys (CMKs)** for buckets storing CJI. AWS-managed encryption (AES-256 / SSE-S3) satisfies FedRAMP High SC-28 but does **not** satisfy CJIS v6.0 — agencies must provision their own KMS CMKs and configure SSE-KMS with those CMKs. A future enhancement to this script will report the encryption *key source* (not just whether encryption is on) to surface this delta during an audit.
 
+## Roadmap
+
+This tool will be consolidated into the **Unified Evidence Collector** (Project 4, Month 7), which aggregates `s3-audit`, `sg-audit`, `cloudtrail-audit`, and `evidence-logger` into a single pipeline producing OSCAL-ready evidence records. The agency-CMK key-source delta check noted under *CJIS v6.0 Relevance* ships as part of that consolidation, alongside JSON output feeding [`oscal-evidence-pipeline`](https://github.com/0xBahalaNa/oscal-evidence-pipeline) as a Component Definition source.
+
 ## Cleanup
 
 Delete test buckets when done to avoid charges:
