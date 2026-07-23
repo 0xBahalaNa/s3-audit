@@ -20,6 +20,26 @@ Two scripts:
 1. **`s3_audit.py`** — Audits buckets for encryption and public access block compliance.
 2. **`deploy_test_buckets.py`** — Creates test buckets with various configurations to exercise the audit script.
 
+## Architecture Overview
+
+```mermaid
+flowchart TD
+    CLI["s3_audit.py<br/>CLI entry"] --> S3["boto3 S3 client"]
+    S3 --> LIST["list_buckets"]
+    LIST --> PER["Per-bucket checks"]
+    PER --> ENC["get_bucket_encryption<br/>SSE-KMS / AES-256"]
+    PER --> PAB["get_public_access_block<br/>all four settings"]
+    FIX["deploy_test_buckets.py<br/>optional fixtures"] -.-> S3
+    ENC --> OUT["Console summary evidence<br/>PASS / WARN / FAIL"]
+    PAB --> OUT
+    OUT --> HUM["Auditors / assessors"]
+    OUT --> PIPE["Future CSV/JSON<br/>evidence-logger · OSCAL"]
+```
+
+Editable Mermaid source (kept in sync with the fence above): [`docs/architecture.mmd`](docs/architecture.mmd).
+
+`s3_audit.py` lists every bucket, then checks encryption-at-rest (SC-28) and public access block (AC-3 / CM-6) per bucket. Findings print as a console PASS/WARN/FAIL summary for assessors today; CSV/JSON export is the planned handoff into evidence-logger / OSCAL. `deploy_test_buckets.py` is an optional fixture path for local exercise.
+
 ## Requirements
 
 - Python 3.x

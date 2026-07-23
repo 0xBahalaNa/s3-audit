@@ -1,0 +1,14 @@
+%% Editable Mermaid source for the README "Architecture Overview" section.
+%% Keep this file in sync with the inline ```mermaid fence in README.md.
+%% Diff-able source of truth for the architecture graph (no separate PNG export).
+flowchart TD
+    CLI["s3_audit.py<br/>CLI entry"] --> S3["boto3 S3 client"]
+    S3 --> LIST["list_buckets"]
+    LIST --> PER["Per-bucket checks"]
+    PER --> ENC["get_bucket_encryption<br/>SSE-KMS / AES-256"]
+    PER --> PAB["get_public_access_block<br/>all four settings"]
+    FIX["deploy_test_buckets.py<br/>optional fixtures"] -.-> S3
+    ENC --> OUT["Console summary evidence<br/>PASS / WARN / FAIL"]
+    PAB --> OUT
+    OUT --> HUM["Auditors / assessors"]
+    OUT --> PIPE["Future CSV/JSON<br/>evidence-logger · OSCAL"]
