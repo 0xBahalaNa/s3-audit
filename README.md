@@ -1,10 +1,10 @@
 # S3 Audit
 
-A Python tool that audits all S3 buckets in your AWS account for security compliance — encryption at rest and public access block enforcement. Built for GRC engineers, compliance analysts, and assessors working in FedRAMP High and CJIS v6.0 environments where bucket misconfigurations create direct evidence-handling risk.
+A Python tool that audits all S3 buckets in your AWS account for security compliance — encryption at rest and public access block enforcement. Built for GRC engineers, compliance analysts, and assessors working in FedRAMP High and CJIS v6.1 environments where bucket misconfigurations create direct evidence-handling risk.
 
 ## Compliance Controls Addressed
 
-| NIST 800-53 Rev 5 | FedRAMP High | CJIS v6.0 | Validation Method |
+| NIST 800-53 Rev 5 | FedRAMP High | CJIS v6.1 | Validation Method |
 |--------------------|:------------:|:---------:|-------------------|
 | SC-28 Protection of Information at Rest | Yes | Agency-managed CMK required | `get_bucket_encryption` API check |
 | SC-28(1) Cryptographic Protection | Yes | — | Verifies SSE-KMS or AES-256 algorithm |
@@ -117,19 +117,19 @@ Verifies all four public access block settings are enabled:
 
 ## How an Auditor Uses This Output
 
-An assessor reviewing a FedRAMP High or CJIS v6.0 authorization package can run this script across the in-scope account to verify that every bucket holding regulated data satisfies the SC-28 (encryption at rest) and AC-3 / AC-21 (public access prevention) controls. The PASS / WARN / FAIL output maps directly to the assessor's adequacy determination: PASS is satisfied, WARN is a partial finding requiring remediation, FAIL is a control deficiency. Combining this run with `cloudtrail-audit` (logging) and `evidence-logger` (timestamped evidence packaging) produces the audit trail an assessor can reference back to NIST 800-53A assessment objectives.
+An assessor reviewing a FedRAMP High or CJIS v6.1 authorization package can run this script across the in-scope account to verify that every bucket holding regulated data satisfies the SC-28 (encryption at rest) and AC-3 / AC-21 (public access prevention) controls. The PASS / WARN / FAIL output maps directly to the assessor's adequacy determination: PASS is satisfied, WARN is a partial finding requiring remediation, FAIL is a control deficiency. Combining this run with `cloudtrail-audit` (logging) and `evidence-logger` (timestamped evidence packaging) produces the audit trail an assessor can reference back to NIST 800-53A assessment objectives.
 
 ## FedRAMP 20x Alignment
 
 This script supports the FedRAMP 20x compliance-as-code direction by producing deterministic, automatable, and re-runnable control validation output. The boto3 API calls map cleanly to KSI metrics for continuous monitoring, and the per-bucket findings can be transformed into OSCAL Assessment Results entries for machine-readable compliance reporting. Future iterations will emit JSON output (see Future Enhancements) to feed compliance-trestle and OSCAL pipelines directly.
 
-## CJIS v6.0 Relevance
+## CJIS v6.1 Relevance
 
-CJIS Security Policy v6.0 (published Dec 27, 2024) aligns to NIST 800-53 Rev 5 and phases in rather than switching on a single date: v5.9.5 was the scored audit standard through March 31, 2026 and v6.0 is the default audit baseline from April 1, 2026, with modernized Priority 2-4 controls fully enforceable Oct 1, 2027 (timing varies by state CSA). The most material delta this script touches is **SC-28**: CJIS v6.0 requires encryption at rest using **agency-managed Customer Master Keys (CMKs)** for buckets storing CJI. AWS-managed encryption (AES-256 / SSE-S3) satisfies FedRAMP High SC-28 but does **not** satisfy CJIS v6.0 — agencies must provision their own KMS CMKs and configure SSE-KMS with those CMKs. A future enhancement to this script will report the encryption *key source* (not just whether encryption is on) to surface this delta during an audit.
+CJIS Security Policy v6.1 (released June 25, 2026) is the current policy, aligned with NIST 800-53 Rev 5. v6.x has been the default audit baseline since April 1, 2026 (v5.9.5 sunset March 31, 2026); modernized Priority 2-4 controls are fully enforceable Oct 1, 2027 (timing varies by state CSA). The most material delta this script touches is **SC-28**: CJIS v6.1 requires encryption at rest using **agency-managed Customer Master Keys (CMKs)** for buckets storing CJI. AWS-managed encryption (AES-256 / SSE-S3) satisfies FedRAMP High SC-28 but does **not** satisfy CJIS v6.1 — agencies must provision their own KMS CMKs and configure SSE-KMS with those CMKs. A future enhancement to this script will report the encryption *key source* (not just whether encryption is on) to surface this delta during an audit.
 
 ## Roadmap
 
-This tool will be consolidated into the **Unified Evidence Collector** (Project 4, Month 7), which aggregates `s3-audit`, `sg-audit`, `cloudtrail-audit`, and `evidence-logger` into a single pipeline producing OSCAL-ready evidence records. The agency-CMK key-source delta check noted under *CJIS v6.0 Relevance* ships as part of that consolidation, alongside JSON output feeding [`oscal-evidence-pipeline`](https://github.com/0xBahalaNa/oscal-evidence-pipeline) as a Component Definition source.
+This tool will be consolidated into the **Unified Evidence Collector** (Project 4, Month 7), which aggregates `s3-audit`, `sg-audit`, `cloudtrail-audit`, and `evidence-logger` into a single pipeline producing OSCAL-ready evidence records. The agency-CMK key-source delta check noted under *CJIS v6.1 Relevance* ships as part of that consolidation, alongside JSON output feeding [`oscal-evidence-pipeline`](https://github.com/0xBahalaNa/oscal-evidence-pipeline) as a Component Definition source.
 
 ## Cleanup
 
