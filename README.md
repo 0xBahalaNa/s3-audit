@@ -1,24 +1,24 @@
 # S3 Audit
 
-A Python tool that audits all S3 buckets in your AWS account for security compliance — encryption at rest and public access block enforcement. Built for GRC engineers, compliance analysts, and assessors working in FedRAMP High and CJIS v6.1 environments where bucket misconfigurations create direct evidence-handling risk.
+I built this to audit every S3 bucket in an AWS account for two things: encryption at rest and public access block enforcement. It's for GRC engineers, compliance analysts, and assessors working in FedRAMP High and CJIS v6.1 environments, where a bucket misconfiguration is direct evidence-handling risk.
 
 ## Compliance Controls Addressed
 
 | NIST 800-53 Rev 5 | FedRAMP High | CJIS v6.1 | Validation Method |
 |--------------------|:------------:|:---------:|-------------------|
 | SC-28 Protection of Information at Rest | Yes | Agency-managed CMK required | `get_bucket_encryption` API check |
-| SC-28(1) Cryptographic Protection | Yes | — | Verifies SSE-KMS or AES-256 algorithm |
-| AC-3 Access Enforcement | Yes | — | `get_public_access_block` enforces deny-by-default |
-| AC-21 Information Sharing | Yes | — | Public access block prevents inadvertent CJI exposure |
-| CM-6 Configuration Settings | Yes | — | Verifies all four PAB settings are enabled |
-| AU-12 Audit Record Generation | Yes | — | Every audit run produces compliance evidence |
+| SC-28(1) Cryptographic Protection | Yes | - | Verifies SSE-KMS or AES-256 algorithm |
+| AC-3 Access Enforcement | Yes | - | `get_public_access_block` enforces deny-by-default |
+| AC-21 Information Sharing | Yes | - | Public access block prevents inadvertent CJI exposure |
+| CM-6 Configuration Settings | Yes | - | Verifies all four PAB settings are enabled |
+| AU-12 Audit Record Generation | Yes | - | Every audit run produces compliance evidence |
 
 ## Overview
 
 Two scripts:
 
-1. **`s3_audit.py`** — Audits buckets for encryption and public access block compliance.
-2. **`deploy_test_buckets.py`** — Creates test buckets with various configurations to exercise the audit script.
+1. **`s3_audit.py`**: Audits buckets for encryption and public access block compliance.
+2. **`deploy_test_buckets.py`**: Creates test buckets with various configurations to exercise the audit script.
 
 ## Architecture Overview
 
@@ -99,8 +99,8 @@ Creates 3 buckets with different configurations to test the audit script:
 
 Verifies server-side encryption (SSE) is enabled.
 
-- **PASS** — Encryption configured (AES-256 or SSE-KMS)
-- **FAIL** — No encryption configured
+- **PASS**: Encryption configured (AES-256 or SSE-KMS)
+- **FAIL**: No encryption configured
 
 ### 2. Public Access Block (AC-3, AC-21, CM-6)
 
@@ -111,9 +111,9 @@ Verifies all four public access block settings are enabled:
 - `BlockPublicPolicy`
 - `RestrictPublicBuckets`
 
-- **PASS** — All 4 enabled
-- **WARN** — Partial (some enabled)
-- **FAIL** — None enabled
+- **PASS**: All 4 enabled
+- **WARN**: Partial (some enabled)
+- **FAIL**: None enabled
 
 ## How an Auditor Uses This Output
 
@@ -125,7 +125,7 @@ This script supports the FedRAMP 20x compliance-as-code direction by producing d
 
 ## CJIS v6.1 Relevance
 
-CJIS Security Policy v6.1 (released June 25, 2026) is the current policy, aligned with NIST 800-53 Rev 5. v6.x has been the default audit baseline since April 1, 2026 (v5.9.5 sunset March 31, 2026); modernized Priority 2-4 controls are fully enforceable Oct 1, 2027 (timing varies by state CSA). The most material delta this script touches is **SC-28**: CJIS v6.1 requires encryption at rest using **agency-managed Customer Master Keys (CMKs)** for buckets storing CJI. AWS-managed encryption (AES-256 / SSE-S3) satisfies FedRAMP High SC-28 but does **not** satisfy CJIS v6.1 — agencies must provision their own KMS CMKs and configure SSE-KMS with those CMKs. A future enhancement to this script will report the encryption *key source* (not just whether encryption is on) to surface this delta during an audit.
+CJIS Security Policy v6.1 (released June 25, 2026) is the current policy, aligned with NIST 800-53 Rev 5. v6.x has been the default audit baseline since April 1, 2026 (v5.9.5 sunset March 31, 2026); modernized Priority 2-4 controls are fully enforceable Oct 1, 2027 (timing varies by state CSA). The most material delta this script touches is **SC-28**: CJIS v6.1 requires encryption at rest using **agency-managed Customer Master Keys (CMKs)** for buckets storing CJI. AWS-managed encryption (AES-256 / SSE-S3) satisfies FedRAMP High SC-28 but does **not** satisfy CJIS v6.1: agencies must provision their own KMS CMKs and configure SSE-KMS with those CMKs. A future enhancement to this script will report the encryption *key source* (not just whether encryption is on) to surface this delta during an audit.
 
 ## Roadmap
 
@@ -146,7 +146,7 @@ aws s3 rb s3://grce-audit-partial-<your_account_id>
 - Export results to CSV / JSON for downstream OSCAL pipelines
 - Report encryption key source (CMK ARN) to surface the CJIS SC-28 agency-CMK delta
 - Add timestamp + structured findings record (feeds `evidence-logger`)
-- Check bucket versioning (SI-12 — Information Management & Retention)
+- Check bucket versioning (SI-12: Information Management & Retention)
 - Check bucket logging (AU-2)
 - Filter buckets by tag (in-scope CJI vs general data)
 - SNS / email alerts for non-compliant buckets
